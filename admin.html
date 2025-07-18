@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopcart Admin - Add Product</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Admin-specific styles */
+    :root {
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --danger-color: #ef4444;
+      --danger-hover: #dc2626;
+      --success-color: #10b981;
+      --success-hover: #059669;
+      --warning-color: #f59e0b;
+      --warning-hover: #d97706;
+      --sidebar-bg: #1e293b;
+      --sidebar-text: #e2e8f0;
+      --sidebar-hover: #334155;
+      --card-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      color: #334155;
+    }
+    
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+      background: #f5f7fa;
+    }
+    
+    .admin-sidebar {
+      width: 250px;
+      background: var(--sidebar-bg);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .sidebar-logo {
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .sidebar-toggle {
+      background: none;
+      border: none;
+      color: var(--sidebar-text);
+      cursor: pointer;
+      display: none;
+    }
+    
+    .sidebar-nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-nav a:hover {
+      background: var(--sidebar-hover);
+      color: white;
+    }
+    
+    .sidebar-nav a.active {
+      background: var(--sidebar-hover);
+      color: white;
+      border-left: 3px solid var(--primary-color);
+    }
+    
+    .sidebar-nav i {
+      width: 20px;
+      text-align: center;
+    }
+    
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 20px;
+      border-top: 1px solid #334155;
+    }
+    
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .sidebar-user img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .admin-main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      transition: all 0.3s ease;
+    }
+    
+    .admin-breadcrumbs {
+      color: #64748b;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+    
+    .admin-breadcrumbs a {
+      color: #64748b;
+      text-decoration: none;
+    }
+    
+    .admin-breadcrumbs a:hover {
+      color: var(--primary-color);
+      text-decoration: underline;
+    }
+    
+    .admin-breadcrumbs .active {
+      color: #1e293b;
+      font-weight: 500;
+    }
+    
+    .admin-title {
+      font-size: 1.8rem;
+      margin: 0 0 5px 0;
+      color: #1e293b;
+      font-weight: 700;
+    }
+    
+    .admin-subtitle {
+      color: #64748b;
+      margin: 0 0 20px 0;
+      font-size: 0.95rem;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .form-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .form-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+    }
+    
+    .form-card h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #1e293b;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 15px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #334155;
+      font-size: 0.9rem;
+    }
+    
+    .form-group input, 
+    .form-group select, 
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .form-group input:focus, 
+    .form-group select:focus, 
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .admin-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 20px 0;
+      background: white;
+      position: sticky;
+      bottom: 0;
+      border-top: 1px solid #e2e8f0;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+    
+    .btn-outline {
+      background: white;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+    
+    .btn-outline:hover {
+      background: #f5f7fa;
+    }
+    
+    .btn-danger {
+      background: var(--danger-color);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: var(--danger-hover);
+    }
+    
+    .btn-success {
+      background: var(--success-color);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: var(--success-hover);
+    }
+    
+    .btn-warning {
+      background: var(--warning-color);
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background: var(--warning-hover);
+    }
+    
+    .color-picker-list {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .color-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    
+    .color-swatch:hover {
+      transform: scale(1.1);
+    }
+    
+    .color-swatch.selected {
+      box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary-color);
+    }
+    
+    .color-swatch-remove {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--danger-color);
+      border: 1px solid #ccc;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    .color-swatch:hover .color-swatch-remove {
+      opacity: 1;
+    }
+    
+    .image-upload-area {
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 15px;
+    }
+    
+    .image-upload-area:hover {
+      border-color: var(--primary-color);
+      background: rgba(79, 70, 229, 0.05);
+    }
+    
+    .image-upload-placeholder {
+      color: #64748b;
+      font-size: 1rem;
+    }
+    
+    .image-upload-placeholder i {
+      font-size: 1.8rem;
+      display: block;
+      margin-bottom: 10px;
+      color: #94a3b8;
+    }
+    
+    .image-upload-list {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    
+    .image-thumb {
+      width: 80px;
+      height: 80px;
+      border-radius: 6px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+    
+    .image-thumb:hover {
+      transform: scale(1.05);
+    }
+    
+    .image-thumb-remove {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--danger-color);
+      border: 1px solid #ccc;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    .image-thumb:hover .image-thumb-remove {
+      opacity: 1;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-active {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status-draft {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+    
+    .status-archived {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+    
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 6px;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transform: translateX(150%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast-success {
+      background: var(--success-color);
+    }
+    
+    .toast-error {
+      background: var(--danger-color);
+    }
+    
+    .toast-warning {
+      background: var(--warning-color);
+    }
+    
+    .toast-info {
+      background: var(--primary-color);
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 992px) {
+      .admin-sidebar {
+        position: fixed;
+        z-index: 100;
+        height: 100vh;
+        transform: translateX(-100%);
+      }
+      
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .admin-main {
+        margin-left: 0;
+        width: 100%;
+      }
+      
+      .sidebar-toggle {
+        display: block;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .admin-form-actions {
+        flex-direction: column-reverse;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-logo"><i class="fa-solid fa-cart-shopping"></i> Shopcart</span>
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="#" class="active"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+          <li><a href="#admin-products-section"><i class="fa-solid fa-box"></i> Products</a></li>
+          <li><a href="#admin-orders-section"><i class="fa-solid fa-clipboard-list"></i> Orders</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <img src="https://ui-avatars.com/api/?name=Admin&background=4f46e5&color=fff" alt="Admin">
+          <div>
+            <div>Admin</div>
+            <small>Super Admin</small>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Breadcrumbs -->
+      <div class="admin-breadcrumbs">
+        <a href="#">Dashboard</a> <span>/</span>
+        <span class="active">Admin Panel</span>
+      </div>
+      <h1 class="admin-title">Admin Panel</h1>
+      <p class="admin-subtitle">Manage your products and orders</p>
+
+      <!-- Dashboard Section -->
+      <section id="admin-dashboard-section">
+        <h2>Dashboard</h2>
+        <div class="dashboard-cards" style="display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 32px;">
+          <div class="dashboard-card" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); padding: 24px; min-width: 220px; flex: 1;">
+            <div style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 8px;"><i class="fa-solid fa-box"></i></div>
+            <div style="font-size: 1.2rem; font-weight: 600;">Products</div>
+            <div id="dashboardProductCount" style="font-size: 2rem; font-weight: 700; margin-top: 8px;">0</div>
+          </div>
+          <div class="dashboard-card" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); padding: 24px; min-width: 220px; flex: 1;">
+            <div style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 8px;"><i class="fa-solid fa-clipboard-list"></i></div>
+            <div style="font-size: 1.2rem; font-weight: 600;">Orders</div>
+            <div id="dashboardOrderCount" style="font-size: 2rem; font-weight: 700; margin-top: 8px;">0</div>
+          </div>
+        </div>
+        <!-- Add Product Form -->
+        <h3 style="margin-top:32px;">Add New Product</h3>
+        <form id="adminProductForm" class="admin-product-form" autocomplete="off">
+          <input type="hidden" id="adminProductId">
+          <div class="form-grid">
+            <!-- Name & Description Card -->
+            <div class="form-card">
+              <h2>Name and Description</h2>
+              <div class="form-group">
+                <label for="adminProductName">Product Name</label>
+                <input type="text" id="adminProductName" required placeholder="Enter product name">
+              </div>
+              <div class="form-group">
+                <label for="adminProductDesc">Product Description</label>
+                <textarea id="adminProductDesc" rows="4" required placeholder="Enter product description"></textarea>
+              </div>
+            </div>
+            <!-- Product Details Card -->
+            <div class="form-card">
+              <h2>Product Details</h2>
+              <div class="form-group">
+                <label for="adminProductBrand">Brand Name</label>
+                <input type="text" id="adminProductBrand" placeholder="e.g. Apple, Adidas">
+              </div>
+              <div class="form-group">
+                <label for="adminProductSize">Product Size</label>
+                <select id="adminProductSize">
+                  <option value="">Select size</option>
+                  <option value="Small">Small</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Large">Large</option>
+                  <option value="XS">XS</option>
+                  <option value="S">S</option>
+                  <option value="M">M</option>
+                  <option value="L">L</option>
+                  <option value="XL">XL</option>
+                  <option value="XXL">XXL</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="adminProductColors">Product Colors</label>
+                <div class="color-picker-list" id="colorPickerList"></div>
+                <div class="form-group" style="display: flex; gap: 10px;">
+                  <input type="color" id="colorPicker" value="#4f46e5" style="flex: 1; height: 40px;">
+                  <button type="button" class="btn-outline" id="addColorBtn" style="margin: 0;">
+                    <i class="fa fa-plus"></i> Add Color
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Product Pricing Card -->
+            <div class="form-card">
+              <h2>Product Pricing</h2>
+              <div class="form-group">
+                <label for="adminProductPrice">Price ($)</label>
+                <input type="number" id="adminProductPrice" min="0" step="0.01" required placeholder="0.00">
+              </div>
+              <div class="form-group">
+                <label for="adminProductComparePrice">Compare Price ($)</label>
+                <input type="number" id="adminProductComparePrice" min="0" step="0.01" placeholder="0.00">
+                <small style="color: #64748b; display: block; margin-top: 5px;">The original price that you compare to the sale price.</small>
+              </div>
+              <div class="form-group">
+                <label for="adminProductDiscount">Discount (%)</label>
+                <input type="number" id="adminProductDiscount" min="0" max="100" step="1" placeholder="0">
+              </div>
+              <div class="form-group">
+                <label for="adminProductMinOrder">Minimum Order</label>
+                <input type="number" id="adminProductMinOrder" min="1" placeholder="1">
+              </div>
+            </div>
+            <!-- Category Card -->
+            <div class="form-card">
+              <h2>Category</h2>
+              <div class="form-group">
+                <label for="adminProductCategory">Product Category</label>
+                <select id="adminProductCategory" required>
+                  <option value="">Select category</option>
+                  <option value="Men's Clothes">Men's Clothes</option>
+                  <option value="Women's Clothes">Women's Clothes</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Home">Home</option>
+                  <option value="Beauty">Beauty</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Accessories">Accessories</option>
+                  <option value="Footwear">Footwear</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="adminProductSubCategory">Product Sub-Category</label>
+                <input type="text" id="adminProductSubCategory" placeholder="e.g. Men's Tops & T-Shirts">
+              </div>
+              <div class="form-group">
+                <label for="adminProductTags">Product Tags</label>
+                <input type="text" id="adminProductTags" placeholder="e.g. summer, new, trending">
+                <small style="color: #64748b; display: block; margin-top: 5px;">Separate tags with commas</small>
+              </div>
+            </div>
+            <!-- Stock Card -->
+            <div class="form-card">
+              <h2>Manage Stock</h2>
+              <div class="form-group">
+                <label for="adminProductSKU">Stock Keeping Unit</label>
+                <input type="text" id="adminProductSKU" placeholder="e.g. SKU-BB-66-A6">
+              </div>
+              <div class="form-group">
+                <label for="adminProductStock">Product Stock</label>
+                <input type="number" id="adminProductStock" min="0" required placeholder="0">
+              </div>
+              <div class="form-group">
+                <label for="adminProductMinStock">Minimum Stock</label>
+                <input type="number" id="adminProductMinStock" min="0" placeholder="0">
+              </div>
+              <div class="form-group">
+                <label for="adminProductStatus">Product Status</label>
+                <select id="adminProductStatus">
+                  <option value="active">Active</option>
+                  <option value="draft">Draft</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+            </div>
+            <!-- Image Upload Card -->
+            <div class="form-card">
+              <h2>Product Images</h2>
+              <div class="image-upload-area" id="imageUploadArea">
+                <div class="image-upload-placeholder">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                  <div>Drag & drop images here or click to browse</div>
+                  <small>Recommended size: 800x800 pixels</small>
+                </div>
+              </div>
+              <input type="file" id="imageUploadInput" accept="image/*" multiple style="display: none;">
+              <div class="image-upload-list" id="imageUploadList"></div>
+              <div id="imageUrlInputs">
+                <div class="form-group">
+                  <label for="imageUrl1">Image URL 1 (Primary)</label>
+                  <input type="url" id="imageUrl1" placeholder="Enter image URL">
+                </div>
+                <div class="form-group">
+                  <label for="imageUrl2">Image URL 2</label>
+                  <input type="url" id="imageUrl2" placeholder="Enter image URL">
+                </div>
+                <div class="form-group">
+                  <label for="imageUrl3">Image URL 3</label>
+                  <input type="url" id="imageUrl3" placeholder="Enter image URL">
+                </div>
+                <div class="form-group">
+                  <label for="imageUrl4">Image URL 4</label>
+                  <input type="url" id="imageUrl4" placeholder="Enter image URL">
+                </div>
+              </div>
+            </div>
+            <!-- Shipping Card -->
+            <div class="form-card">
+              <h2>Shipping Details</h2>
+              <div class="form-group">
+                <label for="adminProductWeight">Weight (kg)</label>
+                <input type="number" id="adminProductWeight" min="0" step="0.01" placeholder="0.00">
+              </div>
+              <div class="form-group">
+                <label for="adminProductDimensions">Dimensions (cm)</label>
+                <div style="display: flex; gap: 10px;">
+                  <input type="number" placeholder="Length" min="0" step="0.1" id="adminProductLength" style="flex: 1;">
+                  <input type="number" placeholder="Width" min="0" step="0.1" id="adminProductWidth" style="flex: 1;">
+                  <input type="number" placeholder="Height" min="0" step="0.1" id="adminProductHeight" style="flex: 1;">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="adminProductShippingClass">Shipping Class</label>
+                <select id="adminProductShippingClass">
+                  <option value="">No shipping class</option>
+                  <option value="free">Free Shipping</option>
+                  <option value="standard">Standard</option>
+                  <option value="express">Express</option>
+                  <option value="bulky">Bulky Items</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <!-- Form Actions -->
+          <div class="admin-form-actions">
+            <button type="button" class="btn-outline" id="resetFormBtn">
+              <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+            <button type="button" class="btn-outline" id="saveDraftBtn">
+              <i class="fa-solid fa-file"></i> Save Draft
+            </button>
+            <button type="submit" class="btn-primary" id="addProductBtn">
+              <i class="fa-solid fa-plus"></i> Add Product
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Products Section -->
+      <section id="admin-products-section" style="display:none;">
+        <h2>All Products</h2>
+        <div id="adminProductList"></div>
+      </section>
+
+      <!-- Orders Section -->
+      <section id="admin-orders-section" style="margin-top:40px; display:none;">
+        <h2>All Orders</h2>
+        <div id="adminOrdersList"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastNotification"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM Elements
+      const sidebar = document.getElementById('adminSidebar');
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const productForm = document.getElementById('adminProductForm');
+      const addColorBtn = document.getElementById('addColorBtn');
+      const colorPicker = document.getElementById('colorPicker');
+      const colorPickerList = document.getElementById('colorPickerList');
+      const imageUploadArea = document.getElementById('imageUploadArea');
+      const imageUploadInput = document.getElementById('imageUploadInput');
+      const imageUploadList = document.getElementById('imageUploadList');
+      const resetFormBtn = document.getElementById('resetFormBtn');
+      const saveDraftBtn = document.getElementById('saveDraftBtn');
+      const addProductBtn = document.getElementById('addProductBtn');
+      const toastNotification = document.getElementById('toastNotification');
+
+      // Toggle sidebar on mobile
+      sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('open');
+      });
+
+      // Color picker functionality
+      addColorBtn.addEventListener('click', function() {
+        const color = colorPicker.value;
+        addColorSwatch(color);
+      });
+
+      function addColorSwatch(color) {
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch';
+        swatch.style.backgroundColor = color;
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'productColors[]';
+        input.value = color;
+        const removeBtn = document.createElement('span');
+        removeBtn.className = 'color-swatch-remove';
+        removeBtn.innerHTML = '&times;';
+        removeBtn.onclick = function(e) {
+          e.stopPropagation();
+          // Instantly remove the swatch from DOM and color from array
+          swatch.remove();
+          const colorToRemove = swatch.style.backgroundColor;
+          const idx = colors.indexOf(colorToRemove);
+          if (idx !== -1) {
+            colors.splice(idx, 1);
+          }
+        };
+        swatch.appendChild(removeBtn);
+        swatch.appendChild(input);
+        swatch.onclick = function() {
+          document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+          swatch.classList.add('selected');
+        };
+        colorPickerList.appendChild(swatch);
+      }
+
+      // Image upload functionality
+      imageUploadArea.addEventListener('click', function() {
+        imageUploadInput.click();
+      });
+
+      imageUploadInput.addEventListener('change', function(e) {
+        const files = e.target.files;
+        handleImageFiles(files);
+      });
+
+      // Drag and drop for images
+      imageUploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '#4f46e5';
+        this.style.backgroundColor = 'rgba(79, 70, 229, 0.1)';
+      });
+
+      imageUploadArea.addEventListener('dragleave', function() {
+        this.style.borderColor = '#cbd5e1';
+        this.style.backgroundColor = 'transparent';
+      });
+
+      imageUploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '#cbd5e1';
+        this.style.backgroundColor = 'transparent';
+        
+        const files = e.dataTransfer.files;
+        handleImageFiles(files);
+      });
+
+      function handleImageFiles(files) {
+        if (files.length > 0) {
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.type.startsWith('image/')) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                addImageThumbnail(e.target.result);
+              };
+              reader.readAsDataURL(file);
+            }
+          }
+        }
+      }
+
+      function addImageThumbnail(src) {
+        const thumb = document.createElement('div');
+        thumb.className = 'image-thumb';
+        thumb.style.backgroundImage = `url(${src})`;
+        thumb.innerHTML = `
+          <span class="image-thumb-remove">&times;</span>
+          <input type="hidden" name="productImages[]" value="${src}">
+        `;
+        
+        // Add remove functionality
+        const removeBtn = thumb.querySelector('.image-thumb-remove');
+        removeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          thumb.remove();
+        });
+        
+        imageUploadList.appendChild(thumb);
+      }
+
+      // Form reset
+      resetFormBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to reset the form? All changes will be lost.')) {
+          productForm.reset();
+          colorPickerList.innerHTML = '';
+          imageUploadList.innerHTML = '';
+          showToast('Form has been reset', 'success');
+        }
+      });
+
+      // Save draft
+      saveDraftBtn.addEventListener('click', function() {
+        if (validateForm()) {
+          const productData = getFormData();
+          productData.status = 'draft';
+          saveProduct(productData, 'draft');
+        }
+      });
+
+      // Form submission
+      productForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (validateForm()) {
+          const productData = getFormData();
+          productData.status = 'active';
+          saveProduct(productData, 'active');
+        }
+      });
+
+      // Relaxed form validation: only check for the first missing/invalid required field
+      function validateForm() {
+        const name = document.getElementById('adminProductName').value.trim();
+        if (!name) { showToast('Product name is required', 'error'); return false; }
+        const desc = document.getElementById('adminProductDesc').value.trim();
+        if (!desc) { showToast('Product description is required', 'error'); return false; }
+        const brand = document.getElementById('adminProductBrand').value.trim();
+        if (!brand) { showToast('Brand is required', 'error'); return false; }
+        const size = document.getElementById('adminProductSize').value;
+        if (!size) { showToast('Product size is required', 'error'); return false; }
+        const price = document.getElementById('adminProductPrice').value;
+        if (!price || parseFloat(price) <= 0) { showToast('Valid price is required', 'error'); return false; }
+        const category = document.getElementById('adminProductCategory').value;
+        if (!category) { showToast('Category is required', 'error'); return false; }
+        const stock = document.getElementById('adminProductStock').value;
+        if (!stock || parseInt(stock) < 0) { showToast('Valid stock is required', 'error'); return false; }
+        const colors = Array.from(document.querySelectorAll('.color-swatch input')).map(input => input.value);
+        if (colors.length === 0) { showToast('At least one color is required', 'error'); return false; }
+        const images = Array.from(document.querySelectorAll('.image-thumb input')).map(input => input.value);
+        const imageUrl1 = document.getElementById('imageUrl1').value.trim();
+        if (images.length === 0 && !imageUrl1) { showToast('At least one image is required', 'error'); return false; }
+        return true;
+      }
+
+      // Get form data
+      function getFormData() {
+        const colors = Array.from(document.querySelectorAll('.color-swatch input')).map(input => input.value);
+        const images = Array.from(document.querySelectorAll('.image-thumb input')).map(input => input.value);
+        
+        // Add URL images if they exist
+        for (let i = 1; i <= 4; i++) {
+          const url = document.getElementById(`imageUrl${i}`).value.trim();
+          if (url) images.push(url);
+        }
+        
+        return {
+          id: document.getElementById('adminProductId').value || generateId(),
+          name: document.getElementById('adminProductName').value.trim(),
+          description: document.getElementById('adminProductDesc').value.trim(),
+          brand: document.getElementById('adminProductBrand').value.trim(),
+          size: document.getElementById('adminProductSize').value,
+          colors: colors,
+          price: parseFloat(document.getElementById('adminProductPrice').value),
+          comparePrice: parseFloat(document.getElementById('adminProductComparePrice').value) || null,
+          discount: parseInt(document.getElementById('adminProductDiscount').value) || 0,
+          minOrder: parseInt(document.getElementById('adminProductMinOrder').value) || 1,
+          category: document.getElementById('adminProductCategory').value,
+          subCategory: document.getElementById('adminProductSubCategory').value.trim(),
+          tags: document.getElementById('adminProductTags').value.trim().split(',').map(tag => tag.trim()),
+          sku: document.getElementById('adminProductSKU').value.trim(),
+          stock: parseInt(document.getElementById('adminProductStock').value) || 0,
+          minStock: parseInt(document.getElementById('adminProductMinStock').value) || 0,
+          status: document.getElementById('adminProductStatus').value,
+          images: images,
+          weight: parseFloat(document.getElementById('adminProductWeight').value) || null,
+          dimensions: {
+            length: parseFloat(document.getElementById('adminProductLength').value) || null,
+            width: parseFloat(document.getElementById('adminProductWidth').value) || null,
+            height: parseFloat(document.getElementById('adminProductHeight').value) || null
+          },
+          shippingClass: document.getElementById('adminProductShippingClass').value,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+      // Save product to localStorage (add or update) - only update UI after successful save
+      function saveProduct(productData, action) {
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        const existingIndex = products.findIndex(p => p.id === productData.id);
+        if (existingIndex >= 0) {
+          products[existingIndex] = productData;
+        } else {
+          products.push(productData);
+        }
+        try {
+          localStorage.setItem('products', JSON.stringify(products));
+        } catch (error) {
+          console.error('Error saving product:', error);
+          showToast('Error saving product. Please try again.', 'error');
+          return;
+        }
+        showToast(action === 'draft' ? 'Product draft saved successfully!' : (existingIndex >= 0 ? 'Product updated successfully!' : 'Product added successfully!'), 'success');
+        renderAdminProducts();
+        updateDashboardCounts();
+        resetFormUI();
+        if (action !== 'draft') {
+          // Real-time update for other tabs
+          window.dispatchEvent(new Event('storage'));
+        }
+      }
+
+      // Generate random ID
+      function generateId() {
+        return 'prod_' + Math.random().toString(36).substr(2, 9);
+      }
+
+      // Toast notification: green for success, red for error
+      function showToast(message, type) {
+        toastNotification.textContent = message;
+        toastNotification.className = `toast toast-${type}`;
+        toastNotification.classList.add('show');
+        let icon;
+        switch(type) {
+          case 'success': icon = 'fa-circle-check'; toastNotification.style.background = '#10b981'; break;
+          case 'error': icon = 'fa-circle-xmark'; toastNotification.style.background = '#ef4444'; break;
+          case 'warning': icon = 'fa-triangle-exclamation'; toastNotification.style.background = '#f59e0b'; break;
+          default: icon = 'fa-circle-info'; toastNotification.style.background = '#4f46e5';
+        }
+        toastNotification.innerHTML = `<i class="fa-solid ${icon}"></i> ${message}`;
+        setTimeout(() => {
+          toastNotification.classList.remove('show');
+        }, 3000);
+      }
+
+      // Initialize form with sample data for demo
+      function initSampleData() {
+        // Only add sample data if the form is empty and we're not editing
+        if (!document.getElementById('adminProductId').value && 
+            !document.getElementById('adminProductName').value) {
+          document.getElementById('adminProductName').value = 'Premium Wireless Headphones';
+          document.getElementById('adminProductDesc').value = 'High-quality wireless headphones with noise cancellation and 30-hour battery life. Perfect for music lovers and professionals who need focus.';
+          document.getElementById('adminProductBrand').value = 'Sony';
+          document.getElementById('adminProductPrice').value = '299.99';
+          document.getElementById('adminProductComparePrice').value = '349.99';
+          document.getElementById('adminProductDiscount').value = '15';
+          document.getElementById('adminProductCategory').value = 'Electronics';
+          document.getElementById('adminProductSubCategory').value = 'Audio & Headphones';
+          document.getElementById('adminProductTags').value = 'wireless, noise-cancelling, premium';
+          document.getElementById('adminProductSKU').value = 'HP-SONY-1000XM4';
+          document.getElementById('adminProductStock').value = '50';
+          document.getElementById('imageUrl1').value = 'https://m.media-amazon.com/images/I/61D4Z3yKPAL._AC_SX679_.jpg';
+          document.getElementById('imageUrl2').value = 'https://m.media-amazon.com/images/I/71Q4hVqSHGL._AC_SX679_.jpg';
+          
+          // Add sample colors
+          addColorSwatch('#000000');
+          addColorSwatch('#3b82f6');
+          addColorSwatch('#ffffff');
+        }
+      }
+
+      // Check if we're editing an existing product
+      function checkForEdit() {
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+        
+        if (productId) {
+          // Load product data
+          const products = JSON.parse(localStorage.getItem('products')) || [];
+          const product = products.find(p => p.id === productId);
+          
+          if (product) {
+            // Populate form fields
+            document.getElementById('adminProductId').value = product.id;
+            document.getElementById('adminProductName').value = product.name;
+            document.getElementById('adminProductDesc').value = product.description;
+            document.getElementById('adminProductBrand').value = product.brand || '';
+            document.getElementById('adminProductSize').value = product.size || '';
+            document.getElementById('adminProductPrice').value = product.price;
+            document.getElementById('adminProductComparePrice').value = product.comparePrice || '';
+            document.getElementById('adminProductDiscount').value = product.discount || '';
+            document.getElementById('adminProductMinOrder').value = product.minOrder || 1;
+            document.getElementById('adminProductCategory').value = product.category;
+            document.getElementById('adminProductSubCategory').value = product.subCategory || '';
+            document.getElementById('adminProductTags').value = product.tags ? product.tags.join(', ') : '';
+            document.getElementById('adminProductSKU').value = product.sku || '';
+            document.getElementById('adminProductStock').value = product.stock || 0;
+            document.getElementById('adminProductMinStock').value = product.minStock || 0;
+            document.getElementById('adminProductStatus').value = product.status || 'active';
+            document.getElementById('adminProductWeight').value = product.weight || '';
+            document.getElementById('adminProductLength').value = product.dimensions?.length || '';
+            document.getElementById('adminProductWidth').value = product.dimensions?.width || '';
+            document.getElementById('adminProductHeight').value = product.dimensions?.height || '';
+            document.getElementById('adminProductShippingClass').value = product.shippingClass || '';
+            
+            // Add colors
+            if (product.colors && product.colors.length > 0) {
+              product.colors.forEach(color => addColorSwatch(color));
+            }
+            
+            // Update UI for edit mode
+            document.querySelector('.admin-title').textContent = 'Edit Product';
+            document.querySelector('.admin-subtitle').textContent = 'Edit existing product details';
+            addProductBtn.innerHTML = '<i class="fa-solid fa-save"></i> Update Product';
+          }
+        }
+      }
+
+      // Initialize the page
+      checkForEdit();
+      initSampleData();
+
+      // Sidebar navigation logic
+      document.querySelectorAll('.sidebar-nav a').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+          this.classList.add('active');
+          // Hide all sections
+          document.getElementById('admin-dashboard-section').style.display = 'none';
+          document.getElementById('admin-products-section').style.display = 'none';
+          document.getElementById('admin-orders-section').style.display = 'none';
+          // Show the selected section
+          if (this.textContent.includes('Dashboard')) {
+            document.getElementById('admin-dashboard-section').style.display = '';
+          } else if (this.textContent.includes('Products')) {
+            document.getElementById('admin-products-section').style.display = '';
+          } else if (this.textContent.includes('Orders')) {
+            document.getElementById('admin-orders-section').style.display = '';
+          }
+        });
+      });
+      // Show dashboard by default
+      document.getElementById('admin-dashboard-section').style.display = '';
+      document.getElementById('admin-products-section').style.display = 'none';
+      document.getElementById('admin-orders-section').style.display = 'none';
+      // Dashboard counts
+      function updateDashboardCounts() {
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        document.getElementById('dashboardProductCount').textContent = products.length;
+        document.getElementById('dashboardOrderCount').textContent = orders.length;
+      }
+      updateDashboardCounts();
+
+      // Render all products in adminProductList
+      function renderAdminProducts() {
+        const container = document.getElementById('adminProductList');
+        if (!container) return;
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        if (products.length === 0) {
+          container.innerHTML = '<p>No products added yet.</p>';
+          return;
+        }
+        container.innerHTML = '';
+        products.forEach((p, index) => {
+          const item = document.createElement('div');
+          item.className = 'admin-product-item';
+          item.style = 'display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px; border:1px solid #ddd; margin-bottom:10px;';
+          item.innerHTML = `
+            <div>
+              <strong>${p.name}</strong> - $${p.price} | Stock: ${p.stock}
+            </div>
+            <div>
+              <button data-index="${index}" class="edit-btn">Edit</button>
+              <button data-index="${index}" class="delete-btn">Delete</button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+        // Attach events
+        container.querySelectorAll('.edit-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            // Redirect to update page with product id
+            let products = JSON.parse(localStorage.getItem('products')) || [];
+            const p = products[btn.dataset.index];
+            window.location.href = `admin.html?id=${p.id}`;
+          });
+        });
+        container.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', () => deleteProduct(btn.dataset.index));
+        });
+      }
+      // Render all orders in adminOrdersList
+      function renderAdminOrders() {
+        const container = document.getElementById('adminOrdersList');
+        if (!container) return;
+        let orders = JSON.parse(localStorage.getItem('orders')) || [];
+        if (orders.length === 0) {
+          container.innerHTML = '<p>No orders found.</p>';
+          return;
+        }
+        container.innerHTML = '';
+        orders.slice().reverse().forEach((order, idx) => {
+          const div = document.createElement('div');
+          div.className = 'order-card';
+          div.innerHTML = `
+            <div class="order-card-header">
+              <div class="order-card-title">Order #${order.id}</div>
+              <div class="order-card-status ${order.status ? order.status.toLowerCase() : ''}" style="color:${order.status==='Approved'?'#10b981':order.status==='Rejected'?'#ef4444':order.status==='Wait for Approval'?'#f59e0b':'#64748b'};font-weight:600;">${order.status || ''}</div>
+            </div>
+            <div class="order-card-details">
+              <div><b>Date:</b> ${order.date || ''}</div>
+              <div><b>Name:</b> ${order.name || ''}</div>
+              <div><b>Email:</b> ${order.email || ''}</div>
+              <div><b>Address:</b> ${order.address || ''}</div>
+              <div><b>Items:</b> ${order.items ? order.items.map(item => {
+                const p = (JSON.parse(localStorage.getItem('products')) || []).find(prod => prod.id === item.id);
+                return p ? `${p.name} (x${item.qty})` : '';
+              }).join(', ') : ''}</div>
+              <div style="margin-top:10px;">
+                <label>Status: </label>
+                <select data-idx="${orders.length-1-idx}" class="order-status-select">
+                  <option value="Wait for Approval" ${order.status==='Wait for Approval'?'selected':''}>Wait for Approval</option>
+                  <option value="Approved" ${order.status==='Approved'?'selected':''}>Approved</option>
+                  <option value="Rejected" ${order.status==='Rejected'?'selected':''}>Rejected</option>
+                </select>
+              </div>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+        // Attach status change events
+        container.querySelectorAll('.order-status-select').forEach(sel => {
+          sel.addEventListener('change', function() {
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+            orders[this.dataset.idx].status = this.value;
+            localStorage.setItem('orders', JSON.stringify(orders));
+            renderAdminOrders();
+            updateDashboardCounts();
+            showToast('Order status updated!', 'success');
+            window.dispatchEvent(new Event('storage'));
+          });
+        });
+      }
+      // Call render functions on load
+      renderAdminProducts();
+      renderAdminOrders();
+      updateDashboardCounts();
+
+      // Save product to correct key and redirect to home
+      window.saveProduct = function(productData, action) {
+        try {
+          let products = JSON.parse(localStorage.getItem('products')) || [];
+          const existingIndex = products.findIndex(p => p.id === productData.id);
+          if (existingIndex >= 0) {
+            products[existingIndex] = productData;
+          } else {
+            products.push(productData);
+          }
+          localStorage.setItem('products', JSON.stringify(products));
+          // Show success message
+          const message = action === 'draft' 
+            ? 'Product draft saved successfully!' 
+            : 'Product added successfully!';
+          showToast(message, 'success');
+          renderAdminProducts();
+          updateDashboardCounts();
+          if (action !== 'draft') {
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 1000);
+          }
+        } catch (error) {
+          console.error('Error saving product:', error);
+          showToast('Error saving product. Please try again.', 'error');
+        }
+      }
+
+      // Edit product: robustly reset color/image pickers, update UI, and scroll to form
+      function editProduct(index) {
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        const p = products[index];
+        // Clear color swatches and image thumbnails before adding new ones
+        colorPickerList.innerHTML = '';
+        imageUploadList.innerHTML = '';
+        for (let i = 1; i <= 4; i++) {
+          document.getElementById(`imageUrl${i}`).value = '';
+        }
+        document.getElementById('adminProductId').value = p.id;
+        document.getElementById('adminProductName').value = p.name;
+        document.getElementById('adminProductDesc').value = p.description;
+        document.getElementById('adminProductBrand').value = p.brand || '';
+        document.getElementById('adminProductSize').value = p.size || '';
+        document.getElementById('adminProductPrice').value = p.price;
+        document.getElementById('adminProductComparePrice').value = p.comparePrice || '';
+        document.getElementById('adminProductDiscount').value = p.discount || '';
+        document.getElementById('adminProductMinOrder').value = p.minOrder || 1;
+        document.getElementById('adminProductCategory').value = p.category;
+        document.getElementById('adminProductSubCategory').value = p.subCategory || '';
+        document.getElementById('adminProductTags').value = p.tags ? p.tags.join(', ') : '';
+        document.getElementById('adminProductSKU').value = p.sku || '';
+        document.getElementById('adminProductStock').value = p.stock || 0;
+        document.getElementById('adminProductMinStock').value = p.minStock || 0;
+        document.getElementById('adminProductStatus').value = p.status || 'active';
+        document.getElementById('adminProductWeight').value = p.weight || '';
+        document.getElementById('adminProductLength').value = p.dimensions?.length || '';
+        document.getElementById('adminProductWidth').value = p.dimensions?.width || '';
+        document.getElementById('adminProductHeight').value = p.dimensions?.height || '';
+        document.getElementById('adminProductShippingClass').value = p.shippingClass || '';
+        // Colors
+        if (p.colors && p.colors.length > 0) {
+          p.colors.forEach(color => addColorSwatch(color));
+        }
+        // Images: show all as thumbnails, and only fill URL fields for up to 4 images that are valid URLs
+        let urlFieldIndex = 1;
+        if (p.images && p.images.length > 0) {
+          p.images.forEach(img => {
+            addImageThumbnail(img);
+            // If it's a URL (not a data URL), fill the next available imageUrl field
+            if (/^https?:\/\//.test(img) && urlFieldIndex <= 4) {
+              document.getElementById(`imageUrl${urlFieldIndex}`).value = img;
+              urlFieldIndex++;
+            }
+          });
+        }
+        // Clear any remaining URL fields
+        for (; urlFieldIndex <= 4; urlFieldIndex++) {
+          document.getElementById(`imageUrl${urlFieldIndex}`).value = '';
+        }
+        document.querySelector('.admin-title').textContent = 'Edit Product';
+        document.querySelector('.admin-subtitle').textContent = 'Edit existing product details';
+        addProductBtn.innerHTML = '<i class="fa-solid fa-save"></i> Update Product';
+        // Scroll to form
+        document.getElementById('adminProductForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Delete product: real-time update
+      function deleteProduct(index) {
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        products.splice(index, 1);
+        localStorage.setItem('products', JSON.stringify(products));
+        showToast('Product deleted successfully!', 'success');
+        renderAdminProducts();
+        updateDashboardCounts();
+        resetFormUI();
+        window.dispatchEvent(new Event('storage'));
+      }
+    });
+
+    // Make functions available globally
+    function viewProduct(id) {
+      localStorage.setItem('selectedProductId', id);
+      window.location.href = `product.html?id=${id}`;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopcart - Airpods Max</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    /* Additional styles for this specific product */
+    .product-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .product-subtitle {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+    .main-product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.35s cubic-bezier(.4,2,.6,1), box-shadow 0.25s;
+      cursor: zoom-in;
+      will-change: transform;
+      display: block;
+    }
+    .main-product-image:hover {
+      transform: scale(1.13);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      z-index: 2;
+    }
+    .thumbnail-gallery {
+      display: flex;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .thumbnail {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border 0.2s, transform 0.2s;
+    }
+    .thumbnail.active {
+      border: 2px solid #4f46e5;
+      transform: scale(1.08);
+    }
+    .stock-warning {
+      color: #64748b;
+      font-weight: 500;
+      animation: none;
+    }
+    .main-image-container {
+      width: 100%;
+      max-width: 650px;
+      aspect-ratio: 1/1;
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f7f7fa;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header/Navbar -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <i class="fa-solid fa-cart-shopping"></i> Shopcart
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="orders.html">My Orders</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="cart.html" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i><span id="cartCount">0</span></a>
+        <a href="orders.html" class="user-icon"><i class="fa-solid fa-user"></i></a>
+        <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+      </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="orders.html">My Orders</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb-container">
+      <div class="breadcrumb">
+        <a href="index.html">Electronics</a>Quantity:
+        <i class="fa-solid fa-chevron-right"></i>
+        <a href="#">Audio</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <a href="#">Headphones</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span>Airpods Max</span>
+      </div>
+    </div>
+
+    <section class="product-detail">
+      <!-- Product Images Section -->
+      <div class="product-images-section">
+        <div class="main-image-container">
+          <img id="mainProductImage" src="" alt="Product Image" class="main-product-image">
+        </div>
+        <div class="thumbnail-gallery" id="thumbnailGallery"></div>
+      </div>
+      <!-- Product Info Section -->
+      <div class="product-info-section">
+        <h1 class="product-title" id="productTitle"></h1>
+        <p class="product-subtitle" id="productDesc"></p>
+        <div class="product-rating">
+          <div class="stars" id="productRating"></div>
+          <span class="rating-count" id="ratingCount"></span>
+        </div>
+        <div class="product-price">
+          <span class="price" id="productPrice"></span>
+          <span class="monthly-payment" id="monthlyPayment"></span>
+        </div>
+        <div class="financing-info">
+          <span>Suggested payments with 6 months special financing</span>
+        </div>
+        <!-- Color Selection -->
+        <div class="color-selection">
+          <label>Choose a Color:</label>
+          <div class="color-swatches" id="colorSwatches"></div>
+        </div>
+        <!-- Quantity Selector -->
+        <div class="quantity-selector">
+          <label>Quantity:</label>
+          <div class="qty-controls">
+            <button type="button" id="qtyMinus" class="qty-btn">-</button>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" class="qty-input">
+            <button type="button" id="qtyPlus" class="qty-btn">+</button>
+          </div>
+          <span class="stock-warning" id="stockInfo"></span>
+        </div>
+        <!-- Action Buttons -->
+        <div class="product-actions" id="productActions">
+          <button type="button" class="btn-buy-now" id="buyNowBtn">Buy Now</button>
+          <button type="button" class="btn-add-to-cart" id="addToCartBtn">Add to Cart</button>
+        </div>
+        <!-- Delivery & Return Info -->
+        <div class="product-meta">
+          <div class="delivery-info">
+            <i class="fa-solid fa-truck"></i>
+            <div>
+              <span class="meta-title">Free Delivery</span>
+              <a href="#" class="meta-link">Enter your Postal code for Delivery Availability</a>
+            </div>
+          </div>
+          <div class="return-info">
+            <i class="fa-solid fa-box"></i>
+            <div>
+              <span class="meta-title">Return Delivery</span>
+              <a href="#" class="meta-link">Free 30days Delivery Returns. Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo"><i class="fa-solid fa-cart-shopping"></i> Shopcart</div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2024 Shopcart. All rights reserved.</div>
+  </footer>
+  <script src="js/script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Real-time product detail rendering
+      function getProductIdFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+      }
+      function getProducts() {
+        return JSON.parse(localStorage.getItem('products')) || [];
+      }
+      function renderProductDetailRealtime() {
+        const id = getProductIdFromURL();
+        if (!id) return;
+        const product = getProducts().find(p => p.id === id);
+        if (!product) return;
+        // Get persistent random rating count (ensure consistency with homepage)
+        let ratingCounts = JSON.parse(localStorage.getItem('productRatingCounts') || '{}');
+        if (!ratingCounts[product.id]) {
+          ratingCounts[product.id] = Math.floor(Math.random() * 900) + 100;
+          localStorage.setItem('productRatingCounts', JSON.stringify(ratingCounts));
+        }
+        const ratingCount = ratingCounts[product.id];
+        // Title, desc, price, etc
+        document.getElementById('productTitle').textContent = product.name;
+        document.getElementById('productDesc').textContent = product.description || product.desc || '';
+        document.getElementById('productPrice').textContent = `$${product.price.toFixed(2)}`;
+        document.getElementById('monthlyPayment').textContent = `or $${(product.price / 12).toFixed(2)}/month`;
+        // Compare Price
+        let comparePriceEl = document.getElementById('comparePrice');
+        if (!comparePriceEl) {
+          comparePriceEl = document.createElement('div');
+          comparePriceEl.id = 'comparePrice';
+          comparePriceEl.style.marginTop = '2px';
+          comparePriceEl.style.fontSize = '1.08em';
+          comparePriceEl.style.color = '#b91c1c';
+          comparePriceEl.style.textDecoration = 'line-through';
+          document.getElementById('productPrice').parentNode.insertBefore(comparePriceEl, document.getElementById('monthlyPayment'));
+        }
+        if (product.comparePrice && product.comparePrice > 0) {
+          comparePriceEl.textContent = product.comparePrice;
+          comparePriceEl.style.display = '';
+        } else {
+          comparePriceEl.style.display = 'none';
+        }
+        document.getElementById('productRating').textContent = '★'.repeat(5);
+        document.getElementById('ratingCount').textContent = `(${ratingCount})`;
+        document.getElementById('stockInfo').textContent = `Stock: ${product.stock}`;
+        // Images
+        const mainImage = document.getElementById('mainProductImage');
+        const images = (product.images && product.images.length) ? product.images.filter(img => !!img) : (product.image ? [product.image] : []);
+        // Remove main image if no valid image
+        if (!images[0]) {
+          mainImage.style.display = 'none';
+        } else {
+          mainImage.style.display = '';
+        }
+        let selectedImageIndex = 0;
+        function updateMainImage(idx) {
+          if (images[idx]) {
+            mainImage.src = images[idx];
+            mainImage.alt = product.name;
+            mainImage.style.display = '';
+          } else {
+            mainImage.style.display = 'none';
+          }
+          document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
+            thumb.classList.toggle('active', i === idx);
+          });
+        }
+        updateMainImage(0);
+        // Thumbnails
+        const thumbnailGallery = document.getElementById('thumbnailGallery');
+        thumbnailGallery.innerHTML = '';
+        images.forEach((img, idx) => {
+          if (!img) return;
+          const thumb = document.createElement('img');
+          thumb.src = img;
+          thumb.alt = product.name + ' thumbnail';
+          thumb.className = 'thumbnail' + (idx === 0 ? ' active' : '');
+          thumb.addEventListener('click', () => {
+            selectedImageIndex = idx;
+            updateMainImage(idx);
+          });
+          thumbnailGallery.appendChild(thumb);
+        });
+        // Color swatches
+        const colorSwatches = document.getElementById('colorSwatches');
+        colorSwatches.innerHTML = '';
+        (product.colors || []).forEach((color, idx) => {
+          const swatch = document.createElement('button');
+          swatch.className = 'color-swatch';
+          swatch.style.backgroundColor = color;
+          swatch.title = color;
+          swatch.addEventListener('click', () => {
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+          });
+          colorSwatches.appendChild(swatch);
+        });
+        // Quantity controls
+        const qtyMinus = document.getElementById('qtyMinus');
+        const qtyPlus = document.getElementById('qtyPlus');
+        const quantityInput = document.getElementById('quantity');
+        qtyMinus.onclick = function() {
+          let value = parseInt(quantityInput.value);
+          if (value > 1) quantityInput.value = value - 1;
+        };
+        qtyPlus.onclick = function() {
+          let value = parseInt(quantityInput.value);
+          quantityInput.value = value + 1;
+        };
+      }
+      renderProductDetailRealtime();
+      window.addEventListener('storage', renderProductDetailRealtime);
+
+      // Add to Cart and Buy Now logic
+      function getSelectedColor(product) {
+        const swatches = document.querySelectorAll('.color-swatch');
+        let idx = 0;
+        swatches.forEach((swatch, i) => {
+          if (swatch.classList.contains('active')) idx = i;
+        });
+        return (product.colors && product.colors[idx]) || (product.colors && product.colors[0]) || null;
+      }
+      function getSelectedQuantity() {
+        return parseInt(document.getElementById('quantity').value) || 1;
+      }
+      function getProductIdFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+      }
+      function getProducts() {
+        return JSON.parse(localStorage.getItem('products')) || [];
+      }
+      function getCart() {
+        return JSON.parse(localStorage.getItem('cart')) || [];
+      }
+      function setCart(cart) {
+        localStorage.setItem('cart', JSON.stringify(cart));
+      }
+      function updateCartCount() {
+        const cart = getCart();
+        const count = cart.reduce((sum, item) => sum + item.qty, 0);
+        document.querySelectorAll('#cartCount').forEach(el => el.textContent = count);
+      }
+      // Attach to buttons after rendering
+      setTimeout(() => {
+        const id = getProductIdFromURL();
+        const product = getProducts().find(p => p.id === id);
+        if (!product) return;
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        const buyNowBtn = document.getElementById('buyNowBtn');
+        addToCartBtn.onclick = function() {
+          const color = getSelectedColor(product);
+          const qty = getSelectedQuantity();
+          let cart = getCart();
+          const idx = cart.findIndex(item => item.id === product.id && item.color === color);
+          if (idx > -1) {
+            cart[idx].qty += qty;
+          } else {
+            cart.push({ id: product.id, qty, color });
+          }
+          setCart(cart);
+          updateCartCount();
+          addToCartBtn.innerHTML = '<i class="fa-solid fa-check"></i> Added!';
+          addToCartBtn.style.background = '#27ae60';
+          setTimeout(() => {
+            addToCartBtn.innerHTML = 'Add to Cart';
+            addToCartBtn.style.background = '';
+          }, 2000);
+        };
+        buyNowBtn.onclick = function() {
+          const color = getSelectedColor(product);
+          const qty = getSelectedQuantity();
+          let cart = getCart();
+          const idx = cart.findIndex(item => item.id === product.id && item.color === color);
+          if (idx > -1) {
+            cart[idx].qty += qty;
+          } else {
+            cart.push({ id: product.id, qty, color });
+          }
+          setCart(cart);
+          updateCartCount();
+          window.location.href = 'cart.html';
+        };
+      }, 0);
+    });
+  </script>
+</body>
+</html>

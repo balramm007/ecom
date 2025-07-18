@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopcart - My Orders</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <i class="fa-solid fa-cart-shopping"></i> Shopcart
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="orders.html">My Orders</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="cart.html" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i><span id="cartCount">0</span></a>
+        <a href="orders.html" class="user-icon"><i class="fa-solid fa-user"></i></a>
+        <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+      </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="orders.html">My Orders</a></li>
+      </ul>
+    </div>
+  </header>
+  <main>
+    <section class="dashboard">
+      <aside class="dashboard-sidebar">
+        <h2>My Account</h2>
+        <ul>
+          <li><a href="orders.html" class="active"><i class="fa-solid fa-box"></i> My Orders</a></li>
+          <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+          <li><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i> Cart</a></li>
+        </ul>
+      </aside>
+      <div class="dashboard-content">
+        <h1>My Orders</h1>
+        <div class="orders-list" id="ordersList">
+          <!-- Orders injected by JS -->
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo"><i class="fa-solid fa-cart-shopping"></i> Shopcart</div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2024 Shopcart. All rights reserved.</div>
+  </footer>
+  <script src="js/script.js"></script>
+</body>
+</html> 
