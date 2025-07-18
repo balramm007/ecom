@@ -105,12 +105,15 @@ const DEFAULT_PRODUCTS = [
 ];
 
 const DEFAULT_CATEGORIES = [
-  { name: 'Headphone', icon: 'fa-headphones' },
-  { name: 'Laptop', icon: 'fa-laptop' },
-  { name: 'Shoe', icon: 'fa-shoe-prints' },
-  { name: 'Bag', icon: 'fa-briefcase' },
-  { name: 'Book', icon: 'fa-book' },
-  { name: 'Furniture', icon: 'fa-couch' }
+  { name: 'Mac', icon: 'fa-laptop' },
+  { name: 'iPad', icon: 'fa-tablet-screen-button' },
+  { name: 'iPhone', icon: 'fa-mobile-screen-button' },
+  { name: 'Watch', icon: 'fa-watch-apple' },
+  { name: 'Vision', icon: 'fa-vr-cardboard' },
+  { name: 'AirPods', icon: 'fa-headphones' },
+  { name: 'TV & Home', icon: 'fa-tv' },
+  { name: 'Entertainment', icon: 'fa-film' },
+  { name: 'Accessories', icon: 'fa-keyboard' }
 ];
 
 // --- LocalStorage Helpers --- //
@@ -166,14 +169,14 @@ function renderCategories() {
   const cats = getCategories();
   catList.innerHTML = '';
   cats.forEach(cat => {
-    const div = document.createElement('div');
-    div.className = 'category-card';
-    div.innerHTML = `<i class="fa-solid ${cat.icon}"></i><span>${cat.name}</span>`;
-    div.onclick = () => {
+    const btn = document.createElement('button');
+    btn.className = 'category-item';
+    btn.innerHTML = `<i class="fa-solid ${cat.icon}"></i> ${cat.name}`;
+    btn.onclick = () => {
       document.getElementById('filterCategory').value = cat.name;
       filterAndRenderProducts();
     };
-    catList.appendChild(div);
+    catList.appendChild(btn);
   });
 }
 

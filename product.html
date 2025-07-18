@@ -71,6 +71,27 @@
       overflow: hidden;
       margin-bottom: 18px;
     }
+    .compare-price {
+      color: #b91c1c;
+      text-decoration: line-through;
+      font-size: 1.08em;
+      margin-right: 10px;
+    }
+    .color-swatch {
+      border: 2.5px solid #f5e9d7 !important;
+      box-sizing: border-box;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      margin-right: 8px;
+      cursor: pointer;
+      outline: none;
+      transition: border 0.18s;
+    }
+    .color-swatch.active, .color-swatch:focus {
+      border: 2.5px solid #facc15 !important;
+      box-shadow: 0 0 0 2px #f5e9d7;
+    }
   </style>
 </head>
 <body>
@@ -88,6 +109,7 @@
       <div class="nav-actions">
         <a href="cart.html" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i><span id="cartCount">0</span></a>
         <a href="orders.html" class="user-icon"><i class="fa-solid fa-user"></i></a>
+        <span class="admin-icon" onclick="window.location.href='admin.html'" style="cursor:pointer;"><i class="fa-solid fa-user-shield"></i></span>
         <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
       </div>
     </nav>
@@ -131,6 +153,7 @@
           <span class="rating-count" id="ratingCount"></span>
         </div>
         <div class="product-price">
+          <span id="comparePrice" class="compare-price" style="display:none;"></span>
           <span class="price" id="productPrice"></span>
           <span class="monthly-payment" id="monthlyPayment"></span>
         </div>
@@ -193,7 +216,7 @@
         <a href="#"><i class="fab fa-instagram"></i></a>
       </div>
     </div>
-    <div class="footer-bottom">&copy; 2024 Shopcart. All rights reserved.</div>
+    <div class="footer-bottom">© 2025 Shopcart -Balram. All rights reserved.</div>
   </footer>
   <script src="js/script.js"></script>
   <script>
@@ -221,21 +244,12 @@
         // Title, desc, price, etc
         document.getElementById('productTitle').textContent = product.name;
         document.getElementById('productDesc').textContent = product.description || product.desc || '';
-        document.getElementById('productPrice').textContent = `$${product.price.toFixed(2)}`;
-        document.getElementById('monthlyPayment').textContent = `or $${(product.price / 12).toFixed(2)}/month`;
-        // Compare Price
-        let comparePriceEl = document.getElementById('comparePrice');
-        if (!comparePriceEl) {
-          comparePriceEl = document.createElement('div');
-          comparePriceEl.id = 'comparePrice';
-          comparePriceEl.style.marginTop = '2px';
-          comparePriceEl.style.fontSize = '1.08em';
-          comparePriceEl.style.color = '#b91c1c';
-          comparePriceEl.style.textDecoration = 'line-through';
-          document.getElementById('productPrice').parentNode.insertBefore(comparePriceEl, document.getElementById('monthlyPayment'));
-        }
+        // In JS, just set the values, no need to create/insert comparePrice dynamically
+        document.getElementById('productPrice').textContent = `$${Number(product.price).toFixed(2)}`;
+        document.getElementById('monthlyPayment').textContent = `or $${(Number(product.price) / 12).toFixed(2)}/month`;
+        const comparePriceEl = document.getElementById('comparePrice');
         if (product.comparePrice && product.comparePrice > 0) {
-          comparePriceEl.textContent = product.comparePrice;
+          comparePriceEl.textContent = `$${Number(product.comparePrice).toFixed(2)}`;
           comparePriceEl.style.display = '';
         } else {
           comparePriceEl.style.display = 'none';

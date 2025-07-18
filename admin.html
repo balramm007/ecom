@@ -316,20 +316,19 @@
     }
     
     .color-swatch {
-      width: 28px;
-      height: 28px;
+      border: 2.5px solid #f5e9d7 !important;
+      box-sizing: border-box;
       border-radius: 50%;
-      position: relative;
+      width: 32px;
+      height: 32px;
+      margin-right: 8px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      outline: none;
+      transition: border 0.18s;
     }
-    
-    .color-swatch:hover {
-      transform: scale(1.1);
-    }
-    
-    .color-swatch.selected {
-      box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary-color);
+    .color-swatch.selected, .color-swatch:focus {
+      border: 2.5px solid #facc15 !important;
+      box-shadow: 0 0 0 2px #f5e9d7;
     }
     
     .color-swatch-remove {
@@ -525,6 +524,68 @@
         width: 100%;
       }
     }
+    .image-thumb.drag-over {
+      outline: 3px solid #4f46e5;
+      outline-offset: 2px;
+      z-index: 2;
+    }
+    .image-thumb.dragging {
+      opacity: 0.5;
+    }
+    .edit-btn {
+      background: #fde047;
+      color: #222;
+      border: none;
+      border-radius: 18px;
+      padding: 6px 18px;
+      font-weight: 600;
+      margin-right: 8px;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .edit-btn:hover {
+      background: #facc15;
+    }
+    .delete-btn {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      padding: 6px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .delete-btn:hover {
+      background: #dc2626;
+    }
+    .admin-nav-btn {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      padding: 7px 20px;
+      font-weight: 600;
+      margin-left: 16px;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .admin-nav-btn:hover {
+      background: #3730a3;
+    }
+    .admin-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f4f6;
+      color: #4f46e5;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 1.3em;
+      margin-left: 10px;
+      box-shadow: 0 2px 8px rgba(30,41,59,0.07);
+    }
   </style>
 </head>
 <body>
@@ -600,7 +661,7 @@
               <h2>Product Details</h2>
               <div class="form-group">
                 <label for="adminProductBrand">Brand Name</label>
-                <input type="text" id="adminProductBrand" placeholder="e.g. Apple, Adidas">
+                <input type="text" id="adminProductBrand" placeholder="e.g. Apple">
               </div>
               <div class="form-group">
                 <label for="adminProductSize">Product Size</label>
@@ -656,23 +717,24 @@
                 <label for="adminProductCategory">Product Category</label>
                 <select id="adminProductCategory" required>
                   <option value="">Select category</option>
-                  <option value="Men's Clothes">Men's Clothes</option>
-                  <option value="Women's Clothes">Women's Clothes</option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Home">Home</option>
-                  <option value="Beauty">Beauty</option>
-                  <option value="Sports">Sports</option>
+                  <option value="Mac">Mac</option>
+                  <option value="iPad">iPad</option>
+                  <option value="iPhone">iPhone</option>
+                  <option value="Watch">Watch</option>
+                  <option value="Vision">Vision</option>
+                  <option value="AirPods">AirPods</option>
+                  <option value="TV & Home">TV & Home</option>
+                  <option value="Entertainment">Entertainment</option>
                   <option value="Accessories">Accessories</option>
-                  <option value="Footwear">Footwear</option>
                 </select>
               </div>
               <div class="form-group">
                 <label for="adminProductSubCategory">Product Sub-Category</label>
-                <input type="text" id="adminProductSubCategory" placeholder="e.g. Men's Tops & T-Shirts">
+                <input type="text" id="adminProductSubCategory" placeholder="e.g. MacBook Pro, iPad Air, iPhone 15">
               </div>
               <div class="form-group">
                 <label for="adminProductTags">Product Tags</label>
-                <input type="text" id="adminProductTags" placeholder="e.g. summer, new, trending">
+                <input type="text" id="adminProductTags" placeholder="e.g. M2, Retina, 5G, MagSafe">
                 <small style="color: #64748b; display: block; margin-top: 5px;">Separate tags with commas</small>
               </div>
             </div>
@@ -777,6 +839,7 @@
       <section id="admin-products-section" style="display:none;">
         <h2>All Products</h2>
         <div id="adminProductList"></div>
+        <button id="newProductBtn" class="btn-primary" style="margin-bottom:16px;">+ New Product</button>
       </section>
 
       <!-- Orders Section -->
@@ -791,6 +854,47 @@
   <div class="toast" id="toastNotification"></div>
 
   <script>
+    // Default products (replace with your actual 8–9 products)
+    const DEFAULT_PRODUCTS = [
+      {
+        id: 'p1',
+        name: 'MacBook Pro 14"',
+        price: 1999,
+        category: 'Mac',
+        images: ['https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/mbp14-spacegray-select-202110?wid=1808&hei=1686&fmt=jpeg&qlt=80&.v=1632788574000'],
+        stock: 10
+      },
+      {
+        id: 'p2',
+        name: 'iPhone 15 Pro',
+        price: 999,
+        category: 'iPhone',
+        images: ['https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-family-hero?wid=940&hei=1112&fmt=png-alpha&.v=1692927177705'],
+        stock: 15
+      },
+      // ...add 6–7 more products
+    ];
+
+    // Utility: Get products from localStorage or fallback to default
+    function getProducts() {
+      const stored = localStorage.getItem('products');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch {
+          return [...DEFAULT_PRODUCTS];
+        }
+      }
+      return [...DEFAULT_PRODUCTS];
+    }
+
+    // Utility: Save products to localStorage and notify other tabs
+    function setProducts(products) {
+      localStorage.setItem('products', JSON.stringify(products));
+      // Trigger storage event for same-tab updates
+      window.dispatchEvent(new Event('storage'));
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       // DOM Elements
       const sidebar = document.getElementById('adminSidebar');
@@ -848,14 +952,29 @@
         colorPickerList.appendChild(swatch);
       }
 
+      let imageURLs = []; // Holds all current images (old + new)
+
       // Image upload functionality
       imageUploadArea.addEventListener('click', function() {
         imageUploadInput.click();
       });
-
+      // Robust image upload handler
       imageUploadInput.addEventListener('change', function(e) {
         const files = e.target.files;
-        handleImageFiles(files);
+        if (files.length > 0) {
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.type.startsWith('image/')) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                imageURLs.push(e.target.result); // Append new image
+                updateImageUI();
+              };
+              reader.readAsDataURL(file);
+            }
+          }
+        }
+        imageUploadInput.value = '';
       });
 
       // Drag and drop for images
@@ -886,7 +1005,8 @@
             if (file.type.startsWith('image/')) {
               const reader = new FileReader();
               reader.onload = function(e) {
-                addImageThumbnail(e.target.result);
+                imageURLs.push(e.target.result); // Append new image
+                updateImageUI();
               };
               reader.readAsDataURL(file);
             }
@@ -907,7 +1027,8 @@
         const removeBtn = thumb.querySelector('.image-thumb-remove');
         removeBtn.addEventListener('click', function(e) {
           e.stopPropagation();
-          thumb.remove();
+          imageURLs.splice(i, 1); // Remove from array
+          updateImageUI();
         });
         
         imageUploadList.appendChild(thumb);
@@ -919,6 +1040,7 @@
           productForm.reset();
           colorPickerList.innerHTML = '';
           imageUploadList.innerHTML = '';
+          imageURLs = []; // Clear imageURLs on reset
           showToast('Form has been reset', 'success');
         }
       });
@@ -960,16 +1082,16 @@
         if (!stock || parseInt(stock) < 0) { showToast('Valid stock is required', 'error'); return false; }
         const colors = Array.from(document.querySelectorAll('.color-swatch input')).map(input => input.value);
         if (colors.length === 0) { showToast('At least one color is required', 'error'); return false; }
-        const images = Array.from(document.querySelectorAll('.image-thumb input')).map(input => input.value);
-        const imageUrl1 = document.getElementById('imageUrl1').value.trim();
-        if (images.length === 0 && !imageUrl1) { showToast('At least one image is required', 'error'); return false; }
+        const urlImages = Array.from(document.querySelectorAll('#imageUrlInputs input[type="url"]')).map(input => input.value.trim()).filter(Boolean);
+        const allImages = [...imageURLs, ...urlImages];
+        if (allImages.length === 0) { showToast('At least one image is required', 'error'); return false; }
         return true;
       }
 
       // Get form data
       function getFormData() {
         const colors = Array.from(document.querySelectorAll('.color-swatch input')).map(input => input.value);
-        const images = Array.from(document.querySelectorAll('.image-thumb input')).map(input => input.value);
+        const images = [...imageURLs]; // Use the global imageURLs array
         
         // Add URL images if they exist
         for (let i = 1; i <= 4; i++) {
@@ -995,7 +1117,7 @@
           stock: parseInt(document.getElementById('adminProductStock').value) || 0,
           minStock: parseInt(document.getElementById('adminProductMinStock').value) || 0,
           status: document.getElementById('adminProductStatus').value,
-          images: images,
+          images: images, // Always save the latest images
           weight: parseFloat(document.getElementById('adminProductWeight').value) || null,
           dimensions: {
             length: parseFloat(document.getElementById('adminProductLength').value) || null,
@@ -1020,16 +1142,29 @@
         try {
           localStorage.setItem('products', JSON.stringify(products));
         } catch (error) {
-          console.error('Error saving product:', error);
-          showToast('Error saving product. Please try again.', 'error');
+          if (error && error.name === 'QuotaExceededError') {
+            showToast('Storage limit reached! Please remove some products or use smaller images/URLs.', 'error');
+          } else {
+            showToast('Error saving product. Please try again.', 'error');
+          }
           return;
         }
         showToast(action === 'draft' ? 'Product draft saved successfully!' : (existingIndex >= 0 ? 'Product updated successfully!' : 'Product added successfully!'), 'success');
         renderAdminProducts();
         updateDashboardCounts();
         resetFormUI();
+        // Reset form to add new product mode
+        document.getElementById('adminProductForm').reset();
+        document.getElementById('adminProductId').value = '';
+        document.querySelector('.admin-title').textContent = 'Add New Product';
+        document.querySelector('.admin-subtitle').textContent = 'Fill in the details to add a new product';
+        addProductBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Product';
+        colorPickerList.innerHTML = '';
+        imageUploadList.innerHTML = '';
+        imageURLs = [];
+        // Scroll to form
+        document.getElementById('adminProductForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
         if (action !== 'draft') {
-          // Real-time update for other tabs
           window.dispatchEvent(new Event('storage'));
         }
       }
@@ -1055,32 +1190,6 @@
         setTimeout(() => {
           toastNotification.classList.remove('show');
         }, 3000);
-      }
-
-      // Initialize form with sample data for demo
-      function initSampleData() {
-        // Only add sample data if the form is empty and we're not editing
-        if (!document.getElementById('adminProductId').value && 
-            !document.getElementById('adminProductName').value) {
-          document.getElementById('adminProductName').value = 'Premium Wireless Headphones';
-          document.getElementById('adminProductDesc').value = 'High-quality wireless headphones with noise cancellation and 30-hour battery life. Perfect for music lovers and professionals who need focus.';
-          document.getElementById('adminProductBrand').value = 'Sony';
-          document.getElementById('adminProductPrice').value = '299.99';
-          document.getElementById('adminProductComparePrice').value = '349.99';
-          document.getElementById('adminProductDiscount').value = '15';
-          document.getElementById('adminProductCategory').value = 'Electronics';
-          document.getElementById('adminProductSubCategory').value = 'Audio & Headphones';
-          document.getElementById('adminProductTags').value = 'wireless, noise-cancelling, premium';
-          document.getElementById('adminProductSKU').value = 'HP-SONY-1000XM4';
-          document.getElementById('adminProductStock').value = '50';
-          document.getElementById('imageUrl1').value = 'https://m.media-amazon.com/images/I/61D4Z3yKPAL._AC_SX679_.jpg';
-          document.getElementById('imageUrl2').value = 'https://m.media-amazon.com/images/I/71Q4hVqSHGL._AC_SX679_.jpg';
-          
-          // Add sample colors
-          addColorSwatch('#000000');
-          addColorSwatch('#3b82f6');
-          addColorSwatch('#ffffff');
-        }
       }
 
       // Check if we're editing an existing product
@@ -1126,13 +1235,16 @@
             document.querySelector('.admin-title').textContent = 'Edit Product';
             document.querySelector('.admin-subtitle').textContent = 'Edit existing product details';
             addProductBtn.innerHTML = '<i class="fa-solid fa-save"></i> Update Product';
+
+            // Set imageURLs and update UI for edit mode
+            imageURLs = Array.isArray(product.images) ? [...product.images] : [];
+            updateImageUI();
           }
         }
       }
 
       // Initialize the page
       checkForEdit();
-      initSampleData();
 
       // Sidebar navigation logic
       document.querySelectorAll('.sidebar-nav a').forEach(link => {
@@ -1153,6 +1265,25 @@
             document.getElementById('admin-orders-section').style.display = '';
           }
         });
+      });
+      // Add click handler for Dashboard breadcrumb and sidebar
+      document.querySelectorAll('.sidebar-logo, .sidebar-nav a').forEach(el => {
+        if (el.textContent.includes('Dashboard')) {
+          el.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('adminProductForm').reset();
+            document.getElementById('adminProductId').value = '';
+            document.querySelector('.admin-title').textContent = 'Add New Product';
+            document.querySelector('.admin-subtitle').textContent = 'Fill in the details to add a new product';
+            addProductBtn.innerHTML = '<i class=\'fa-solid fa-plus\'></i> Add Product';
+            colorPickerList.innerHTML = '';
+            imageUploadList.innerHTML = '';
+            imageURLs = [];
+            document.getElementById('admin-dashboard-section').style.display = '';
+            document.getElementById('admin-products-section').style.display = 'none';
+            document.getElementById('adminProductForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          });
+        }
       });
       // Show dashboard by default
       document.getElementById('admin-dashboard-section').style.display = '';
@@ -1293,14 +1424,8 @@
 
       // Edit product: robustly reset color/image pickers, update UI, and scroll to form
       function editProduct(index) {
-        let products = JSON.parse(localStorage.getItem('products')) || [];
+        const products = JSON.parse(localStorage.getItem('products')) || [];
         const p = products[index];
-        // Clear color swatches and image thumbnails before adding new ones
-        colorPickerList.innerHTML = '';
-        imageUploadList.innerHTML = '';
-        for (let i = 1; i <= 4; i++) {
-          document.getElementById(`imageUrl${i}`).value = '';
-        }
         document.getElementById('adminProductId').value = p.id;
         document.getElementById('adminProductName').value = p.name;
         document.getElementById('adminProductDesc').value = p.description;
@@ -1327,20 +1452,11 @@
           p.colors.forEach(color => addColorSwatch(color));
         }
         // Images: show all as thumbnails, and only fill URL fields for up to 4 images that are valid URLs
-        let urlFieldIndex = 1;
-        if (p.images && p.images.length > 0) {
-          p.images.forEach(img => {
-            addImageThumbnail(img);
-            // If it's a URL (not a data URL), fill the next available imageUrl field
-            if (/^https?:\/\//.test(img) && urlFieldIndex <= 4) {
-              document.getElementById(`imageUrl${urlFieldIndex}`).value = img;
-              urlFieldIndex++;
-            }
-          });
-        }
+        imageURLs = Array.isArray(p.images) ? [...p.images] : [];
+        updateImageUI();
         // Clear any remaining URL fields
-        for (; urlFieldIndex <= 4; urlFieldIndex++) {
-          document.getElementById(`imageUrl${urlFieldIndex}`).value = '';
+        for (let i = 1; i <= 4; i++) {
+          document.getElementById(`imageUrl${i}`).value = '';
         }
         document.querySelector('.admin-title').textContent = 'Edit Product';
         document.querySelector('.admin-subtitle').textContent = 'Edit existing product details';
@@ -1360,6 +1476,89 @@
         resetFormUI();
         window.dispatchEvent(new Event('storage'));
       }
+
+      // Function to update image thumbnails and URL fields
+      function updateImageUI() {
+        imageUploadList.innerHTML = "";
+        let dragSrcIdx = null;
+        imageURLs.forEach((img, i) => {
+          const div = document.createElement("div");
+          div.className = "image-thumb";
+          div.style.backgroundImage = `url(${img})`;
+          div.setAttribute("draggable", "true");
+          div.setAttribute("data-idx", i);
+          // Drag events
+          div.ondragstart = function(e) {
+            dragSrcIdx = i;
+            e.dataTransfer.effectAllowed = "move";
+            setTimeout(() => div.classList.add("dragging"), 0);
+          };
+          div.ondragend = function() {
+            div.classList.remove("dragging");
+            dragSrcIdx = null;
+            document.querySelectorAll('.image-thumb').forEach(el => el.classList.remove('drag-over'));
+          };
+          div.ondragover = function(e) {
+            e.preventDefault();
+            if (dragSrcIdx !== i) div.classList.add("drag-over");
+          };
+          div.ondragleave = function() {
+            div.classList.remove("drag-over");
+          };
+          div.ondrop = function(e) {
+            e.preventDefault();
+            div.classList.remove("drag-over");
+            if (dragSrcIdx !== null && dragSrcIdx !== i) {
+              const moved = imageURLs.splice(dragSrcIdx, 1)[0];
+              imageURLs.splice(i, 0, moved);
+              updateImageUI();
+            }
+          };
+          // Remove button
+          const removeBtn = document.createElement("div");
+          removeBtn.className = "image-thumb-remove";
+          removeBtn.innerHTML = "&times;";
+          removeBtn.onclick = function(e) {
+            e.stopPropagation();
+            imageURLs.splice(i, 1); // Remove from array
+            updateImageUI();
+          };
+          div.appendChild(removeBtn);
+          imageUploadList.appendChild(div);
+        });
+      }
+
+      // Helper function to get all image URLs from URL input fields
+      function urlImages() {
+        return Array.from(document.querySelectorAll('#imageUrlInputs input[type="url"]')).map(input => input.value.trim()).filter(Boolean);
+      }
+
+      function getAllImagesCount() {
+        const urlImages = Array.from(document.querySelectorAll('#imageUrlInputs input[type="url"]')).map(input => input.value.trim()).filter(Boolean);
+        return imageURLs.length + urlImages.length;
+      }
+
+      // Update URL input fields to check for limit
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`imageUrl${i}`).addEventListener('change', function() {
+          // Remove any image count limit check
+        });
+      }
+
+      // New Product button in products section
+      document.getElementById('newProductBtn').onclick = function() {
+        document.getElementById('adminProductForm').reset();
+        document.getElementById('adminProductId').value = '';
+        document.querySelector('.admin-title').textContent = 'Add New Product';
+        document.querySelector('.admin-subtitle').textContent = 'Fill in the details to add a new product';
+        addProductBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Product';
+        colorPickerList.innerHTML = '';
+        imageUploadList.innerHTML = '';
+        imageURLs = [];
+        document.getElementById('admin-dashboard-section').style.display = '';
+        document.getElementById('admin-products-section').style.display = 'none';
+        document.getElementById('adminProductForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
     });
 
     // Make functions available globally
