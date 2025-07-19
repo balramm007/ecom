@@ -74,7 +74,7 @@ JavaScript (ES6) – Dynamic Logic
 Local Storage API – Data Persistence
 
 ▶️ Live Demo
-👉 View Live on Vercel
+https://ecommerce.balrampathak.com.np/
 
 🚀 How to Run Locally
 
