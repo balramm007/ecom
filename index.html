@@ -10,6 +10,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
+  /* 
+    Responsive, modern e-commerce homepage styles.
+    Uses flexbox and media queries for mobile support.
+  */
   .product-card img {
     transition: transform 0.35s cubic-bezier(.4,2,.6,1), box-shadow 0.25s;
     cursor: pointer;
@@ -214,7 +218,7 @@
       <a href="#products" class="btn-primary">Buy Now</a>
     </div>
     <div class="hero-image">
-      <img src="https://9to5mac.com/wp-content/uploads/sites/6/2024/07/apple-device-lineup.jpg?quality=82&strip=all" alt="Headphone">
+      <img src="https://9to5mac.com/wp-content/uploads/sites/6/2024/07/apple-device-lineup.jpg?quality=82&strip=all" alt="Apple Devices">
     </div>
   </section>
 
@@ -273,16 +277,16 @@
   </footer>
 
 <script>
+// Main script for dynamic product rendering and interactivity
 document.addEventListener("DOMContentLoaded", () => {
   const productGrid = document.getElementById("productGrid");
-  const priceFilter = document.getElementById("filterPrice");
   const searchInput = document.getElementById("searchInput");
   const cartCountSpan = document.getElementById("cartCount");
 
-  // Remove default products, only use admin products
+  // Get products from localStorage, or empty array if none exist
   let products = JSON.parse(localStorage.getItem("products")) || [];
 
-  // --- Ensure each product has a persistent random rating count ---
+  // Ensure each product has a persistent random rating count
   let ratingCounts = JSON.parse(localStorage.getItem('productRatingCounts') || '{}');
   let updated = false;
   products.forEach(p => {
@@ -293,17 +297,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   if (updated) localStorage.setItem('productRatingCounts', JSON.stringify(ratingCounts));
 
-  // ✅ Render products
+  // Render the product grid
   function renderProducts(items) {
     if (items.length === 0) {
-      productGrid.innerHTML = "<p>No products found.</p>";
+      productGrid.innerHTML = "<p>No products available.</p>";
       return;
     }
     productGrid.innerHTML = items.map(p => {
       // Use persistent random rating count
       const ratingCount = ratingCounts[p.id] || 100;
-      // Use only real images
-      const imgSrc = (p.images && p.images[0]) ? p.images[0] : '';
+      // Use only real images, or fallback
+      const imgSrc = (p.images && p.images[0]) ? p.images[0] : 'https://via.placeholder.com/200x200?text=No+Image';
       return `
         <div class="product-card" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:1.2rem 1rem 1.2rem 1rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);border-radius:16px;min-width:220px;max-width:270px;width:100%;background:#fff;">
           <div style="width:100%;flex:1 1 auto;display:flex;align-items:center;justify-content:center;min-height:180px;max-height:220px;overflow:hidden;border-radius:14px;margin-bottom:0.7rem;">
@@ -324,7 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }).join('');
   }
 
-  // Custom dropdown logic
+  // Custom dropdown logic for sorting
   const sortDropdown = document.getElementById('sortDropdown');
   const sortSelected = document.getElementById('sortSelected');
   const sortDropdownList = document.getElementById('sortDropdownList');
